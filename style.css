@@ -1,0 +1,147 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Use an infinite animation, linear speed, and a long duration */
+    animation: discoEffect 5s linear infinite;
+}
+
+@keyframes discoEffect {
+    0% { background-color: #ff007f; } /* Hot Pink */
+    25% { background-color: #00ff00; } /* Neon Green */
+    50% { background-color: #0000ff; } /* Blue */
+    75% { background-color: #ffff00; } /* Yellow */
+    100% { background-color: #ff007f; } /* Back to Pink */
+}
+  
+    .container {
+        background-color: rgba(164, 237, 121, 0.9);
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgb(247, 4, 4);
+        max-width: 600px;
+        width: 100%;
+    }
+
+    h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 30px;
+    }
+
+    .add-task {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    #taskInput {
+        flex: 1;
+        padding: 10px;
+        border: 2px solid #8fe8f6;
+        border-radius: 4px;
+        font-size: 16px;
+    }
+
+    #taskInput:focus {
+        outline: none;
+        border-color: #4CAF50;
+    }
+
+    #addButton {
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    #addButton:hover {
+        background-color: #45a049;
+    }
+
+    #taskList {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    #taskList li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        margin-bottom: 10px;
+        background-color: #fafafa;
+        transition: background-color 0.2s;
+    }
+
+    #taskList li:hover {
+        background-color: #f0f0f0;
+    }
+
+    #taskList li.completed {
+        background-color: #e8f5e8;
+        text-decoration: line-through;
+        opacity: 0.7;
+    }
+
+    .task-text {
+        flex: 1;
+        cursor: pointer;
+    }
+
+    .delete-btn {
+        background-color: #f44336;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .delete-btn:hover {
+        background-color: #d32f2f;
+    }
+
+    .edit-btn {
+        background-color: #2196F3;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-right: 10px;
+    }
+
+    .edit-btn:hover {
+        background-color: #d219b3;
+    }
+
+    .empty-state {
+        text-align: center;
+        color: #888;
+        font-style: italic;
+        padding: 40px;
+        background-color: #fafafa;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+   body {
+  padding: 25px;
+  background-color: white;
+  color: black;
+  font-size: 25px;
+}
+
+.dark-mode {
+  background-color: black;
+  color: white;
+}
+
