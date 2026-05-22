@@ -1,16 +1,29 @@
 
+    // --- State & DOM References ---
+    // Application state
     let tasks = [];
 
+    // DOM elements used throughout the app
     const taskInput = document.getElementById('taskInput');
     const taskForm = document.getElementById('taskForm');
     const taskList = document.getElementById('taskList');
+    const searchInput = document.getElementById('searchInput');
+    const categorySelect = document.getElementById('categorySelect');
+    const filterCategory = document.getElementById('filterCategory');
+    const messageBox = document.getElementById('message');
 
-    // Save tasks to localStorage
+    // UI state
+    let searchQuery = '';
+    let selectedCategoryFilter = 'All';
+    const defaultCategories = ['Personal', 'School', 'Work'];
+    let categories = [...defaultCategories];
+
+    // Persistence: Save to localStorage 
     function saveTasks() {
         localStorage.setItem('tasks', JSON.stringify(tasks));
     }
 
-    // Load tasks from localStorage
+    // Persistence: Load from localStorage
     function loadTasks() {
         const saved = localStorage.getItem('tasks');
         if (saved) {
@@ -18,32 +31,74 @@
         }
     }
 
-    function myFunction() {
-    var element = document.body;
-    element.classList.toggle("dark-mode");
+    async function fetchCategories() {
+       
+        return [...defaultCategories];
+    }
+
+    // Categories: populate dropdowns
+    function populateCategoryOptions() {
+        categorySelect.innerHTML = categories
+            .map((category) => `<option value="${category}">${category}</option>`)
+            .join('');
+
+        filterCategory.innerHTML = ['All', ...categories]
+            .map((category) => `<option value="${category}">${category}</option>`)
+            .join('');
+    }
+
+    //Notifications (showMessage)
+    function showMessage(message, type = 'info') {
+        messageBox.textContent = message;
+        messageBox.className = `notification ${type}`;
+        messageBox.classList.remove('hidden');
+        clearTimeout(showMessage.timeoutId);
+        showMessage.timeoutId = setTimeout(() => {
+            messageBox.classList.add('hidden');
+        }, 3000);
+    }
+
+    //  Initialize categories
+    async function initCategories() {
+        categories = await fetchCategories();
+        populateCategoryOptions();
     }
 
     function renderTasks() {
         
         taskList.innerHTML = '';
 
-        
-        if (tasks.length === 0) {
+        const filteredTasks = tasks
+            .map((task, index) => ({ task, index }))
+            .filter(({ task }) => {
+                const defaultCategory = categories[0] || 'Personal';
+                const taskCategory = task.category || defaultCategory;
+                const matchesSearch = task.text.toLowerCase().includes(searchQuery);
+                const matchesCategory = selectedCategoryFilter === 'All' || taskCategory === selectedCategoryFilter;
+                return matchesSearch && matchesCategory;
+            });
+
+        if (filteredTasks.length === 0) {
             const emptyMessage = document.createElement('li');
-            emptyMessage.textContent = 'No tasks available';
+            emptyMessage.textContent = searchQuery || selectedCategoryFilter !== 'All'
+                ? 'No tasks match your filters'
+                : 'No tasks available';
             emptyMessage.className = 'empty-state';
             taskList.appendChild(emptyMessage);
             return;
         }
 
-        
-        tasks.forEach((task, index) => {
+        filteredTasks.forEach(({ task, index }) => {
             const li = document.createElement('li');
             li.className = task.completed ? 'completed' : '';
 
             const taskText = document.createElement('span');
             taskText.textContent = task.text;
             taskText.className = 'task-text';
+
+            const categoryBadge = document.createElement('span');
+            categoryBadge.textContent = task.category || categories[0] || 'Personal';
+            categoryBadge.className = 'task-category';
 
             const editButton = document.createElement('button');
             editButton.textContent = 'Edit';
@@ -55,7 +110,9 @@
             deleteButton.className = 'delete-btn';
             deleteButton.dataset.index = index;
 
+            li.dataset.index = index;
             li.appendChild(taskText);
+            li.appendChild(categoryBadge);
             li.appendChild(editButton);
             li.appendChild(deleteButton);
             taskList.appendChild(li);
@@ -82,7 +139,11 @@
         const taskText = taskInput.value.trim();
         if (taskText === '') return;
 
-        tasks.push({ text: taskText, completed: false });
+        tasks.push({
+            text: taskText,
+            completed: false,
+            category: categorySelect.value || categories[0] || 'Personal',
+        });
         taskInput.value = '';
         renderTasks();
         saveTasks();
@@ -103,6 +164,19 @@
     }
 
 
+    function debounce(func, delay) {
+        let timeoutId;
+        return (...args) => {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => func(...args), delay);
+        };
+    }
+
+    const handleSearch = debounce((value) => {
+        searchQuery = value.trim().toLowerCase();
+        renderTasks();
+    }, 300);
+
     taskList.addEventListener('click', (e) => {
         if (e.target.classList.contains('edit-btn')) {
             const index = parseInt(e.target.dataset.index);
@@ -116,19 +190,26 @@
             if (e.target.classList.contains('task-text')) {
                 li = e.target.parentElement;
             }
-            const index = Array.from(taskList.children).indexOf(li);
-            if (index >= 0 && tasks[index]) {
+            const index = parseInt(li.dataset.index, 10);
+            if (!Number.isNaN(index) && tasks[index]) {
                 toggleCompleted(index);
             }
         }
     });
-
 
     taskForm.addEventListener('submit', (e) => {
         e.preventDefault();
         addTask();
     });
 
+    searchInput.addEventListener('input', (e) => {
+        handleSearch(e.target.value);
+    });
+
+    filterCategory.addEventListener('change', (e) => {
+        selectedCategoryFilter = e.target.value;
+        renderTasks();
+    });
 
     taskInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
@@ -136,6 +217,8 @@
             addTask();
         }
     });
+
     loadTasks();
+    initCategories();
 
     renderTasks();
