@@ -10,10 +10,23 @@
     <div class="container">
         <h1>Adonis Task Manager</h1>
         <form id="taskForm" class="add-task">
+            <select id="categorySelect"></select>
             <input type="text" id="taskInput" placeholder="Enter a new task">
             <button type="submit" id="addButton">Add Task</button>
         </form>
-        <p> Youre Task we manage!</p>
+        <div class="toolbar">
+            <div class="search-row">
+                <input type="text" id="searchInput" placeholder="Search tasks">
+            </div>
+            <div class="filter-row">
+                <label for="filterCategory">Filter category:</label>
+                <select id="filterCategory">
+                    <option value="All">All</option>
+                </select>
+            </div>
+        </div>
+        <div id="message" class="notification hidden"></div>
+        <p>Youre Task we manage!</p>
         <ul id="taskList"></ul>
     </div>
     <script src="script.js"></script>
